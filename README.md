@@ -42,7 +42,7 @@ print(B.C)
 ## Issues
 
 If you find a bug in pyniggli or decide to contribute to pyniggli
-please see the [contributions](contributing) guidelines.
+please see the [contributions](CONTRIBUTING) guidelines.
 
 ## Python Packages Used
 

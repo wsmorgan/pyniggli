@@ -91,15 +91,15 @@ class reduced_cell(object):
             if (A-self.eps)>B or (not (A<(B-self.eps) or B<(A-self.eps)) and
                                   (abs(xi)-self.eps)>abs(eta)):
 
-                A,B = self.swap(A,B)
-                xi,eta = self.swap(xi,eta)
+                A,B = self._swap(A,B)
+                xi,eta = self._swap(xi,eta)
                 self.C = np.dot(self.C,[[0,-1,0],[-1,0,0],[0,0,-1]])
             #2
             if (B-self.eps)>C or (not (C<(B-self.eps) or B<(C-self.eps)) and
                                     (abs(eta)-self.eps)>abs(zeta)):
 
-                B,C = self.swap(B,C)
-                eta,zeta = self.swap(eta,zeta)
+                B,C = self._swap(B,C)
+                eta,zeta = self._swap(eta,zeta)
                 self.C = np.dot(self.C,[[-1,0,0],[0,0,-1],[0,-1,0]])
                 reduced = False
                 continue
