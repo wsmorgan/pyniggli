@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wsmorgan/pyniggli.svg?branch=master)](https://travis-ci.org/wsmorgan/pyniggli)[![codecov](https://codecov.io/gh/wsmorgan/pyniggli/branch/master/graph/badge.svg)](https://codecov.io/gh/wsmorgan/pyniggli)[![Code Health](https://landscape.io/github/wsmorgan/pyniggli/master/landscape.svg?style=plastic)](https://landscape.io/github/wsmorgan/pyniggli/master)
+
 # pyniggli
 
 Pyniggli is a python package that uses perform niggli reduction on a
