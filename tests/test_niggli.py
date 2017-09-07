@@ -18,6 +18,11 @@ def test_reduction():
     assert np.allclose(B.niggli,np.transpose([[-0.5,0,-0.5],[-0.5,0,0.5],[0,-3,0]]))
     assert np.allclose(B.niggli,np.dot(A,B.C))
 
+    A = np.transpose([[1.00000000,0.00000000,0.00000000],[-0.50000000,0.86602540,1.63299320],[0.00000000,-1.73205080,1.63299320]])
+    B = reduced_cell(A)
+    assert np.allclose(B.niggli,[[-1.       ,  0.5      ,  0.       ],
+       [ 0.       , -0.8660254, -1.7320508],
+       [ 0.       , -1.6329932,  1.6329932]])
     with pytest.raises(ValueError):
         reduced_cell([[0,0,0],[0,0,0],[0,0,0]])
         reduced_cell([0,0,0])

@@ -1,0 +1,2 @@
+ignore-paths:
+  - pyniggli/__init__.py
