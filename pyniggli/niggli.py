@@ -3,7 +3,7 @@ cell. As described in the papers found at:
 
 https://www.mendeley.com/viewer/?fileId=74bc20b9-a7a5-8e3d-4608-6ce09ea453e0&documentId=7b2a0aec-6dcf-3475-8834-96ddbb760220
 
-https://www.mendeley.com/viewer/?fileId=74bc20b9-a7a5-8e3d-4608-6ce09ea453e0&documentId=7b2a0aec-6dcf-3475-8834-96ddbb760220
+https://www.mendeley.com/viewer/?fileId=39464089-ceb6-6b27-6e45-ade432b467cc&documentId=7dbd825c-282f-3f5a-99a3-cc89a1a5a11e
 
 Author: Wiley S. Morgan 2017
 """
@@ -73,53 +73,44 @@ class reduced_cell(object):
             RuntimeError: if the niggli cell is not found within 100 iterations.
         """
 
-        count = 0
-        reduced = False
+        count, reduced, self.C = 0, False, np.array([[1,0,0],[0,1,0],[0,0,1]]) 
 
-        A = np.dot(self.original[0],self.original[0])
-        B = np.dot(self.original[1],self.original[1])
-        C = np.dot(self.original[2],self.original[2])
-        xi = 2.0 * np.dot(self.original[1],self.original[2])
-        eta = 2.0 * np.dot(self.original[2],self.original[0])
-        zeta = 2.0 *np.dot(self.original[0],self.original[1])
+        A = np.dot(self.original[:,0],self.original[:,0])
+        B = np.dot(self.original[:,1],self.original[:,1])
+        C = np.dot(self.original[:,2],self.original[:,2])
+        xi = 2.0 * np.dot(self.original[:,1],self.original[:,2])
+        eta = 2.0 * np.dot(self.original[:,2],self.original[:,0])
+        zeta = 2.0 *np.dot(self.original[:,0],self.original[:,1])
 
-        self.C = np.array([[1,0,0],[0,1,0],[0,0,1]])
-        while not reduced and count <=100:
+        while not reduced and count <=100:            
             reduced = True
             count += 1
             #1
-            if (A-self.eps)>B or (not (A<(B-self.eps) or B<(A-self.eps)) and
-                                  (abs(xi)-self.eps)>abs(eta)):
+            if (A-self.eps)>B or (abs(abs(A)-abs(B))<self.eps and (abs(xi)-self.eps)>abs(eta)):
 
-                A,B = self._swap(A,B)
-                xi,eta = self._swap(xi,eta)
+                A, B = self._swap(A,B)
+                xi, eta = self._swap(xi,eta)
                 self.C = np.dot(self.C,[[0,-1,0],[-1,0,0],[0,0,-1]])
             #2
-            if (B-self.eps)>C or (not (C<(B-self.eps) or B<(C-self.eps)) and
-                                    (abs(eta)-self.eps)>abs(zeta)):
-
-                B,C = self._swap(B,C)
-                eta,zeta = self._swap(eta,zeta)
+            if (B-self.eps)>C or (abs(abs(C)-abs(B))<self.eps and (abs(eta)-self.eps)>abs(zeta)):
+                B, C = self._swap(B,C)
+                eta, zeta = self._swap(eta,zeta)
                 self.C = np.dot(self.C,[[-1,0,0],[0,0,-1],[0,-1,0]])
                 reduced = False
                 continue
                 #go to 1
             #3
-            if not eta*xi*zeta > (0-self.eps):
+            if (eta*xi*zeta-self.eps) > 0:
                 M = self._find_C3(xi,eta,zeta)
-                xi = abs(xi)
-                eta = abs(eta)
-                zeta = abs(zeta)
+                xi, eta, zeta = abs(xi), abs(eta), abs(zeta)
                 self.C = np.dot(self.C,M)
             #4
-            if not 0 < (eta*xi*zeta-self.eps):
+            if not 0 < (eta*xi*zeta-self.eps) and not(xi<-self.eps and eta<-self.eps and zeta<-self.eps):
                 M = self._find_C4(xi,eta,zeta)
-                xi = -abs(xi)
-                eta = -abs(eta)
-                zeta = -abs(zeta)
+                xi, eta, zeta = -abs(xi), -abs(eta), -abs(zeta)
                 self.C = np.dot(self.C,M)
             #5
-            if (abs(xi)-self.eps)>B or (not(B<(xi-self.eps) and xi<(B-self.eps)) and (2*eta < (zeta-self.eps))) or (not(-B<(xi-self.eps) and xi<(-B-self.eps)) and zeta<(0-self.eps)):
+            if (abs(xi)-self.eps)>B or (abs(xi-B)<self.eps and 2*eta<(zeta-self.eps)) or (abs(xi+B)<self.eps and zeta<(0-self.eps)):
                 C = B+C-xi*np.sign(xi)
                 eta = eta-zeta*np.sign(xi)
                 xi = xi-2*B*np.sign(xi)
@@ -128,7 +119,7 @@ class reduced_cell(object):
                 continue
                 #go to 1
             #6
-            if (abs(eta)-self.eps)>A or (not(A<(eta-self.eps) and eta<(A-self.eps)) and (2*xi<(zeta-self.eps))) or (not(-A<(eta-self.eps) and eta<(-A-self.eps)) and zeta<(0-self.eps)):
+            if (abs(eta)-self.eps)>A or (abs(eta-A)<self.eps and (2*xi<(zeta-self.eps))) or (abs(eta+A)<self.eps and zeta<(0-self.eps)):
                 C = A+C-eta*np.sign(eta)
                 xi = xi-zeta*np.sign(eta)
                 eta = eta-2*A*np.sign(eta)
@@ -137,7 +128,7 @@ class reduced_cell(object):
                 continue
                 #go to 1
             #7
-            if (abs(zeta)-self.eps)>A or (not(A<(zeta-self.eps) and zeta<(A-self.eps)) and (2*xi<(eta-self.eps))) or (not(-A<(zeta-self.eps) and zeta<(-A-self.eps)) and eta<(0-self.eps)):
+            if (abs(zeta)-self.eps)>A or (abs(zeta-A)<self.eps and (2*xi<(eta-self.eps))) or (abs(zeta+A)<self.eps and eta<(0-self.eps)):
                 C = A+B-zeta*np.sign(zeta)
                 xi = xi-eta*np.sign(zeta)
                 zeta = zeta-2*A*np.sign(zeta)
@@ -146,10 +137,10 @@ class reduced_cell(object):
                 continue
                 #go to 1
             #8
-            if xi+eta+zeta+A+B<(0-self.eps) or (not(xi+eta+zeta+A+B<(0-self.eps) or (xi+eta+zeta+A+B-self.eps)>0) and (2*(A+eta)+zeta-self.eps)>0):
+            if xi+eta+zeta+A+B<(0-self.eps) or (abs(xi+eta+zeta+A+B)<self.eps and (2*(A+eta)+zeta-self.eps)>0):
                 C = A+B+C+xi+eta+zeta
                 xi = 2*B+xi+zeta
-                eta = 2*A+eat+zeta
+                eta = 2*A+eta+zeta
                 self.C = np.dot(self.C,np.array([[1,0,1],[0,1,1],[0,0,1]]))
                 reduced = False
                 continue

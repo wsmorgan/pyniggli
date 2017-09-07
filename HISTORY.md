@@ -1,5 +1,9 @@
 # Revision History for pyniggli
 
+## 0.1.2
+-Fixed niggli so that the columns and not the rows are used to colculate the constants.
+-Shortened the calls in the inequalities slightly.
+
 ## 0.1.1
 -Fixed the call to swap in niggli.py.
 
