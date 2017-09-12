@@ -25,9 +25,13 @@ class reduced_cell(object):
         The following examples show how to generate a niggli reduced cell.
 
         >>> import numpy an np
-        >>> from pyniggli.niggli import reduced_cell 
-        >>> A = np.transpase([[0.5,0,0.5],[0,3,0],[0.5,0,-0.5]])
+        >>> from pyniggli import reduced_cell 
+        >>> A = np.transpose([[0.5,0,0.5],[0,3,0],[0.5,0,-0.5]])
         >>> B = reduced_cell(A)
+        >>> # The niggli cell can be retrieved with
+        >>> print(np.transpose(B.niggli))
+            array([[-0.5  0.  -0.5],[-0.5  0.   0.5],[ 0.  -3.   0. ]])
+        >>> # To get the transformation matrix for the niggli cell.
         >>> print(np.transpose(B.C))
             array([[-0.5,0,-0.5],[-0.5,0,0.5],[0,-3,0]])
     """
@@ -87,10 +91,10 @@ class reduced_cell(object):
             count += 1
             #1
             if (A-self.eps)>B or (abs(abs(A)-abs(B))<self.eps and (abs(xi)-self.eps)>abs(eta)):
-
                 A, B = self._swap(A,B)
                 xi, eta = self._swap(xi,eta)
                 self.C = np.dot(self.C,[[0,-1,0],[-1,0,0],[0,0,-1]])
+                
             #2
             if (B-self.eps)>C or (abs(abs(C)-abs(B))<self.eps and (abs(eta)-self.eps)>abs(zeta)):
                 B, C = self._swap(B,C)
@@ -104,35 +108,37 @@ class reduced_cell(object):
                 M = self._find_C3(xi,eta,zeta)
                 xi, eta, zeta = abs(xi), abs(eta), abs(zeta)
                 self.C = np.dot(self.C,M)
+                
             #4
             if not 0 < (eta*xi*zeta-self.eps) and not(xi<-self.eps and eta<-self.eps and zeta<-self.eps):
                 M = self._find_C4(xi,eta,zeta)
                 xi, eta, zeta = -abs(xi), -abs(eta), -abs(zeta)
                 self.C = np.dot(self.C,M)
+                
             #5
             if (abs(xi)-self.eps)>B or (abs(xi-B)<self.eps and 2*eta<(zeta-self.eps)) or (abs(xi+B)<self.eps and zeta<(0-self.eps)):
+                self.C = np.dot(self.C,np.array([[1,0,0],[0,1,-np.sign(xi)],[0,0,1]]))
                 C = B+C-xi*np.sign(xi)
                 eta = eta-zeta*np.sign(xi)
                 xi = xi-2*B*np.sign(xi)
-                self.C = np.dot(self.C,np.array([[1,0,0],[0,1,-np.sign(xi)],[0,0,1]]))
                 reduced = False
                 continue
                 #go to 1
             #6
             if (abs(eta)-self.eps)>A or (abs(eta-A)<self.eps and (2*xi<(zeta-self.eps))) or (abs(eta+A)<self.eps and zeta<(0-self.eps)):
+                self.C = np.dot(self.C,np.array([[1,0,-np.sign(eta)],[0,1,0],[0,0,1]]))
                 C = A+C-eta*np.sign(eta)
                 xi = xi-zeta*np.sign(eta)
                 eta = eta-2*A*np.sign(eta)
-                self.C = np.dot(self.C,np.array([[1,0,-np.sign(eta)],[0,1,0],[0,0,1]]))
                 reduced = False
                 continue
                 #go to 1
             #7
             if (abs(zeta)-self.eps)>A or (abs(zeta-A)<self.eps and (2*xi<(eta-self.eps))) or (abs(zeta+A)<self.eps and eta<(0-self.eps)):
-                C = A+B-zeta*np.sign(zeta)
+                self.C = np.dot(self.C,np.array([[1,-np.sign(zeta),0],[0,1,0],[0,0,1]]))
+                B = A+B-zeta*np.sign(zeta)
                 xi = xi-eta*np.sign(zeta)
                 zeta = zeta-2*A*np.sign(zeta)
-                self.C = np.dot(self.C,np.array([[1,-np.sign(zeta),0],[0,1,0],[0,0,1]]))
                 reduced = False
                 continue
                 #go to 1
@@ -146,7 +152,7 @@ class reduced_cell(object):
                 continue
                 #go to 1
 
-        if count >= 100:
+        if count >= 100: #pragma: no cover
             raise RuntimeError("Could not reduce the cell in 100 iterations.")
         
 
