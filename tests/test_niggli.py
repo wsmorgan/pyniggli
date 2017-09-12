@@ -119,7 +119,9 @@ def test_reduction():
     
     with pytest.raises(ValueError):
         reduced_cell([[0,0,0],[0,0,0],[0,0,0]])
+    with pytest.raises(ValueError):
         reduced_cell([0,0,0])
+    with pytest.raises(ValueError):
         reduced_cell([[2,2,2],[1,1,1]])
 
 def test_swap():
@@ -139,7 +141,7 @@ def test_findC3():
     
     A = np.array([[1,0,0],[0,1,0],[0,0,1]])
 
-    B = reduced_cell(A)
+    B = reduced_cell(A,eps=1E-7)
 
     C = B._find_C3(-1,-1,-1)
     assert np.allclose(C,np.array([[-1,0,0],[0,-1,0],[0,0,-1]]))
