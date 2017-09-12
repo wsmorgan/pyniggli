@@ -73,13 +73,13 @@ def test_reduction():
                                                [-0.5, 0.8660254, -4.8989796]]))
 
     #9
-    A = np.transpose([[1.00000000, 0.00000000, 0.00000000],
+    A = np.transpose([[0.00000000, -1.73205080, 1.63299320],
                       [0.50000000, 2.59807620, 3.26598640],
-                      [0.00000000, -1.73205080, 1.63299320]])
+                      [1.00000000, 0.00000000, 0.00000000]])
     B = reduced_cell(A)
-    assert np.allclose(B.niggli, np.transpose([[1., 0., 0.],
-                                               [0., -1.7320508, 1.6329932],
-                                               [-0.5, -2.5980762, -3.2659864]]))
+    assert np.allclose(B.niggli, np.transpose([[-1., 0., 0.],
+                                               [0., 1.7320508, -1.6329932],
+                                               [0.5, 2.5980762, 3.2659864]]))
 
     #10
     A = np.transpose([[0.5, 0.5, -0.5],
@@ -98,6 +98,24 @@ def test_reduction():
     assert np.allclose(B.niggli, np.transpose([[-1., 0., 0.],
                                                [0., 0., -1.],
                                                [0.5, -1.5, 0.5]]))
+
+    #12
+    A = np.transpose([[.05, 2.7, 3.3],
+                      [0.1, 0.7, 4.5],
+                      [.99, .3, 5.4]])
+    B = reduced_cell(A)
+    assert np.allclose(B.niggli, np.transpose([[-0.89,  0.4 , -0.9 ],
+                                               [-0.84, -1.6 ,  0.3 ],
+                                               [-1.68,  1.5 ,  2.7 ]]))
+
+    #13
+    A = np.transpose([[1, -.1, 0],
+                      [-0.3, 1, .3],
+                      [-.3, -0.1, -1.5 ]])
+    B = reduced_cell(A)
+    assert np.allclose(B.niggli, np.transpose([[-1., 0.1, 0.],
+                                               [0.3, -1., -0.3],
+                                               [0.4, 0.8, -1.2]]))
     
     with pytest.raises(ValueError):
         reduced_cell([[0,0,0],[0,0,0],[0,0,0]])
@@ -144,3 +162,5 @@ def test_findC4():
     C = B._find_C4(1,-1,0)
     assert np.allclose(C,np.array([[-1,0,0],[0,1,0],[0,0,-1]]))
     
+    C = B._find_C4(0,1,-1)
+    assert np.allclose(C,np.array([[-1,0,0],[0,-1,0],[0,0,1]]))
