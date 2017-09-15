@@ -1,5 +1,10 @@
 # Revision History for pyniggli
 
+## 0.1.3
+- Added Niggli condition checks to the subroutine. The class now
+  issues a RuntimeError if the Niggli conditions aren't met.
+- Changed some of the comparisons to be np.allclose.
+
 ## 0.1.2
 -Fixed the niggli reduction so that the values of the angles are used
  to contsruct the transformation matrix before they are reassigned.

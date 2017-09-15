@@ -116,6 +116,33 @@ def test_reduction():
     assert np.allclose(B.niggli, np.transpose([[-1., 0.1, 0.],
                                                [0.3, -1., -0.3],
                                                [0.4, 0.8, -1.2]]))
+
+    #14
+    A = np.array([[ 0.03682244,  0.        ,  0.        ],
+       [ 0.        ,  0.06377834,  0.        ],
+       [ 0.96209276,  0.96209276,  1.92418552]])
+    B = reduced_cell(A,eps=1E-10)
+    assert np.allclose(B.niggli, [[-0.07364488, -0.03682244, -0.03682244],
+                                  [ 0.        ,  0.06377834,  0.        ],
+                                  [ 0.        ,  0.        , -0.96209276]])
+
+    # 15
+    A = np.array([[ 0.07364488,  0.        ,  0.        ],
+                  [ 0.        ,  0.12755668,  0.        ],
+                  [ 0.24052319,  0.24052319,  0.48104638]])
+    B = reduced_cell(A,eps=1E-10)
+    assert np.allclose(B.niggli, [[-0.14728977, -0.07364488, -0.07364488],
+                                  [ 0.        ,  0.12755668,  0.        ],
+                                  [ 0.        ,  0.        , -0.24052319]])
+
+    #16
+    A = np.array([[ 1.20559446,  0.        ,  0.        ],
+                  [ 0.        ,  2.08815085,  0.        ],
+                  [ 3.93745511,  3.93745511,  7.87491022]])
+    B = reduced_cell(A,eps=1E-5)
+    assert np.allclose(B.niggli,[[-2.41118892, -1.20559446, -1.20559446],
+                                 [ 0.        ,  2.08815085,  0.        ],
+                                 [ 0.        ,  0.        , -3.93745511]])
     
     with pytest.raises(ValueError):
         reduced_cell([[0,0,0],[0,0,0],[0,0,0]])
@@ -123,6 +150,10 @@ def test_reduction():
         reduced_cell([0,0,0])
     with pytest.raises(ValueError):
         reduced_cell([[2,2,2],[1,1,1]])
+    with pytest.raises(RuntimeError):
+        reduced_cell([[ 0.03682244,  0.        ,  0.        ],
+                      [ 0.        ,  0.06377834,  0.        ],
+                      [ 0.96209276,  0.96209276,  1.92418552]])
 
 def test_swap():
 

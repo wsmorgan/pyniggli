@@ -116,7 +116,7 @@ class reduced_cell(object):
                 self.C = np.dot(self.C,M)
                 
             #5
-            if (abs(xi)-self.eps)>B or (abs(xi-B)<self.eps and 2*eta<(zeta-self.eps)) or (abs(xi+B)<self.eps and zeta<(0-self.eps)):
+            if (abs(xi)-self.eps)>B or (np.allclose(xi,B) and 2*eta<(zeta-self.eps)) or (np.allclose(xi,-B) and zeta<(0-self.eps)):
                 self.C = np.dot(self.C,np.array([[1,0,0],[0,1,-np.sign(xi)],[0,0,1]]))
                 C = B+C-xi*np.sign(xi)
                 eta = eta-zeta*np.sign(xi)
@@ -125,7 +125,7 @@ class reduced_cell(object):
                 continue
                 #go to 1
             #6
-            if (abs(eta)-self.eps)>A or (abs(eta-A)<self.eps and (2*xi<(zeta-self.eps))) or (abs(eta+A)<self.eps and zeta<(0-self.eps)):
+            if (abs(eta)-self.eps)>A or (np.allclose(eta,A) and (2*xi<(zeta-self.eps))) or (np.allclose(eta,-A) and zeta<(0-self.eps)):
                 self.C = np.dot(self.C,np.array([[1,0,-np.sign(eta)],[0,1,0],[0,0,1]]))
                 C = A+C-eta*np.sign(eta)
                 xi = xi-zeta*np.sign(eta)
@@ -134,7 +134,7 @@ class reduced_cell(object):
                 continue
                 #go to 1
             #7
-            if (abs(zeta)-self.eps)>A or (abs(zeta-A)<self.eps and (2*xi<(eta-self.eps))) or (abs(zeta+A)<self.eps and eta<(0-self.eps)):
+            if (abs(zeta)-self.eps)>A or (np.allclose(zeta,A) and (2*xi<(eta-self.eps))) or (np.allclose(zeta,-A) and eta<(0-self.eps)):
                 self.C = np.dot(self.C,np.array([[1,-np.sign(zeta),0],[0,1,0],[0,0,1]]))
                 B = A+B-zeta*np.sign(zeta)
                 xi = xi-eta*np.sign(zeta)
@@ -152,9 +152,83 @@ class reduced_cell(object):
                 continue
                 #go to 1
 
-        if count >= 100: #pragma: no cover
-            raise RuntimeError("Could not reduce the cell in 100 iterations.")
+        if count >= 100:
+            raise RuntimeError("Could not reduce the cell in 100 iterations. This could be "
+                               "because of floating point error, try providing a smaller eps "
+                               "value.")
+
+        if not self._niggli_check(A,B,C,xi,eta,zeta): # pragma: no cover
+            raise RuntimeError("Cell reduction incorroct A: {0}, B: {1}, C: {2}, "
+                               "xi: {3}, eta: {4}, zeta: {5}. Please submit a bug "
+                               "report to: https://github.com/wsmorgan/pyniggli/"
+                               "issues".format(A,B,C,xi,eta,zeta))
+
+
+    @staticmethod
+    def _niggli_check(A,B,C,xi,eta,zeta):
+        """Checks that the niggli reduced cell satisfies the niggli conditions.
+        Conditions listed at: https://arxiv.org/pdf/1203.5146.pdf.
+
+        Args:
+            A (float): a.a
+            B (float): b.b 
+            C (float): c.c
+            xi (float): 2*b.c
+            eta (float): 2*c.a
+            zeta (float): 2*a.b
         
+        Returns:
+            False if niggli conditons aren't met.
+        """
+
+        if not (A > 0 and (A < B or np.allclose(A,B)) and
+                (B < C or np.allclose(B,C))):
+            return False
+        
+        if np.allclose(A,B) and not (abs(xi) < abs(eta) or np.allclose(abs(xi),abs(eta))):
+            return False
+            
+        if np.allclose(B,C) and not (abs(eta) < abs(zeta) or np.allclose(abs(eta),abs(zeta))):
+            return False
+
+        if not ((xi > 0 and eta > 0 and zeta > 0) or
+                ((xi < 0 or np.allclose(xi,0)) and (eta < 0 or np.allclose(eta,0))
+                 and (zeta < 0 or np.allclose(zeta,0)))):
+            return False
+
+        if not (abs(xi) < B or np.allclose(abs(xi),B)):
+            return False 
+            
+        if not ((abs(eta) < A or np.allclose(abs(eta),A)) and (abs(zeta) < A or
+                                                               np.allclose(abs(zeta),A))):
+            return False
+
+        if not (C < A+B+C+xi+eta+zeta or np.allclose(C, A+B+C+xi+eta+zeta)):
+            return False
+
+        if np.allclose(xi,B) and not (zeta < 2.*eta or np.allclose(zeta,2.*eta)):
+            return False
+
+        if np.allclose(eta,A) and not (zeta < 2.*xi or np.allclose(zeta,2.*xi)):
+            return False
+
+        if np.allclose(zeta,A) and not (eta < 2.*xi or np.allclose(eta,2.*xi)):
+            return False
+
+        if np.allclose(xi,-B) and not np.allclose(zeta,0):
+            return False
+
+        if np.allclose(eta,-A) and not np.allclose(zeta,0):
+            return False
+
+        if np.allclose(zeta,-A) and not np.allclose(eta,0):
+            return False
+
+        if np.allclose(C,A+B+C+xi+eta+zeta,rtol=0.0) and not ((2.*A+2.*eta+zeta) < 0 or
+                                                     np.allclose(2.*A+2.*eta+zeta,0)):
+            return False
+
+        return True
 
     @staticmethod
     def _swap(A,B):
@@ -213,6 +287,7 @@ class reduced_cell(object):
         i = 1
         j = 1
         k = 1
+        p = None
         if (xi-self.eps)>0:
             i = -1
         elif not xi<(0-self.eps):
