@@ -1,5 +1,9 @@
 # Revision History for pyniggli
 
+## Revision 0.1.4
+- Improved the tolerance on floating point comparisons in the Niggli
+  condition checker.
+
 ## 0.1.3
 - Added Niggli condition checks to the subroutine. The class now
   issues a RuntimeError if the Niggli conditions aren't met.
