@@ -1,5 +1,10 @@
 # Revision History for pyniggli
 
+## Revision 0.1.5
+- Fixed issue reported in [issue #5](https://github.com/wsmorgan/pyniggli/issues/5).
+- Updated the floating point tolerance to depend on cell volume.
+- Increased the number of allowed iterations to allow for larger cells.
+
 ## Revision 0.1.4
 - Improved the tolerance on floating point comparisons in the Niggli
   condition checker.
