@@ -1,5 +1,20 @@
 # Revision History for pyniggli
 
+## Revision 0.1.6
+- Added an option to print the steps taken to reduce the cell.
+- Updated the floating point tolerance to better reflect the original
+  paper.
+- Changed the algorithm so that it now calculates the niggli G vector
+  from the updated (partially reduced) lattice after each step to
+  improve stability.
+- Changed steps 3 and 4 to work of integer values rather than the
+  actual floats to improve stability.
+- Re-organized some of the condition checks to improve stability.
+- Added a printing of the original lattice vectors to the debug
+  raises.
+- Changed _find_C3 and _find_C4 to static methods that take integers
+  rather than floats.
+
 ## Revision 0.1.5
 - Fixed issue reported in [issue #5](https://github.com/wsmorgan/pyniggli/issues/5).
 - Updated the floating point tolerance to depend on cell volume.
