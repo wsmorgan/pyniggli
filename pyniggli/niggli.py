@@ -1,10 +1,7 @@
 """Contains the main class and functions for the niggli reduced
 cell. As described in the papers found at:
-
 https://www.mendeley.com/viewer/?fileId=74bc20b9-a7a5-8e3d-4608-6ce09ea453e0&documentId=7b2a0aec-6dcf-3475-8834-96ddbb760220
-
 https://www.mendeley.com/viewer/?fileId=39464089-ceb6-6b27-6e45-ade432b467cc&documentId=7dbd825c-282f-3f5a-99a3-cc89a1a5a11e
-
 Author: Wiley S. Morgan 2017
 """
 
@@ -13,7 +10,6 @@ import numpy as np
 class reduced_cell(object):
     """This class contains the methods necessary to reduce a lattice to
     it's niggli reduced cell.
-
     Attributes:
         original (numpy ndarray): The original cell vectors.
         niggli (numpy ndarray): The niggli reduced cell vectors.
@@ -23,7 +19,6 @@ class reduced_cell(object):
     
     Examples:
         The following examples show how to generate a niggli reduced cell.
-
         >>> import numpy an np
         >>> from pyniggli import reduced_cell 
         >>> A = np.transpose([[0.5,0,0.5],[0,3,0],[0.5,0,-0.5]])
@@ -44,7 +39,6 @@ class reduced_cell(object):
                 default is 1E-5.
             path_ (optional bool): True if the path of the reduction should be printed
                 after the reduction, default False.
-
         Rasise:
             ValueError: if the input is not a 3 by 3 matrix.
             ValueError: if the input has a determinant of 0.
@@ -78,7 +72,6 @@ class reduced_cell(object):
 
     def _get_params(self):
         """Gets the niggli parameters A, B, C, xi, eta, zeta, l, m, n.
-
         Returns:
             A, B, C, xi, eta, zeta, l, m, n (floatx6, intx3): The niggli
                 parameters.
@@ -116,10 +109,8 @@ class reduced_cell(object):
         
     def _niggli_reduction(self,print_path):
         """Performs the niggli reduction of the given lattice.
-
         Args:
             path (bool): True if the path of the reduction should be printed.
-
         Raises:
             RuntimeError: if the niggli cell is not found within 100 iterations.
         """
@@ -218,7 +209,6 @@ class reduced_cell(object):
     def _niggli_check(A,B,C,xi,eta,zeta,eps):
         """Checks that the niggli reduced cell satisfies the niggli conditions.
         Conditions listed at: https://arxiv.org/pdf/1203.5146.pdf.
-
         Args:
             A (float): a.a
             B (float): b.b 
@@ -256,7 +246,7 @@ class reduced_cell(object):
                                                                np.allclose(abs(zeta),A,atol=eps))):
             return False
 
-        if not (C < A+B+C+xi+eta+zeta-eps or np.allclose(C, A+B+C+xi+eta+zeta,atol=eps)):
+        if not (C < A+B+C+xi+eta+zeta-eps or np.allclose(C, A+B+C+xi+eta+zeta,atol=eps)): 
             return False
 
         if np.allclose(xi,B,atol=eps) and not (zeta < 2.*eta-eps or
@@ -289,11 +279,9 @@ class reduced_cell(object):
     @staticmethod
     def _swap(A,B):
         """Swaps the values of A and B.
-
         Args:
             A (float): A value.
             B (float): Another value.
-
         Returns:
             B, A (float,float): The values of A and B swapped.
         """
@@ -304,12 +292,10 @@ class reduced_cell(object):
     def _find_C3(l,m,n):
         """Finds the correct transformation matrix given the values of xi, eta, 
         and zeta for step 3.
-
         Args:
             l (int): Positive if xi is positive, negative if it isn't.
             m (int): Positive if eta is positive, negative if it isn't.
             n (int): Positive if zeta is positive, negative if it isn't.
-
         Returns:
             C (numpy ndarray): The transformation matrix.
         """
@@ -332,12 +318,10 @@ class reduced_cell(object):
     def _find_C4(l,m,n):
         """Finds the correct transformation matrix given the values of xi, eta, 
         and zeta for step 4.
-
         Args:
             l (int): Positive if xi is positive, negative if it isn't.
             m (int): Positive if eta is positive, negative if it isn't.
             n (int): Positive if zeta is positive, negative if it isn't.
-
         Returns:
             C (numpy ndarray): The transformation matrix.
         """
@@ -376,4 +360,4 @@ class reduced_cell(object):
                 
         C = np.array([[i,0,0],[0,j,0],[0,0,k]])
 
-        return C   
+        return C 

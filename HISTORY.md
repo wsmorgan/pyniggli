@@ -1,5 +1,8 @@
 # Revision History for pyniggli
 
+## Revision 0.1.7
+- Added last set of unit tests.
+
 ## Revision 0.1.6
 - Added an option to print the steps taken to reduce the cell.
 - Updated the floating point tolerance to better reflect the original
