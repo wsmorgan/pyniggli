@@ -187,7 +187,7 @@ def test_findC4():
 
     C = B._find_C4(-1,-1,-1)
     assert np.allclose(C,np.array([[1,0,0],[0,1,0],[0,0,1]]))
-
+    
     C = B._find_C4(0,0,1)
     assert np.allclose(C,np.array([[1,0,0],[0,-1,0],[0,0,-1]]))
     
@@ -204,7 +204,7 @@ def test_niggli_check():
     Bc = reduced_cell(A,path_=True)
 
     eps = 1E-3
-    
+
     A, B, C, xi, eta, zeta = 0, 2, 1, 0, 0, 0
     assert not Bc._niggli_check(A,B,C,xi,eta,zeta,eps)
     
@@ -246,3 +246,4 @@ def test_niggli_check():
     
     A, B, C, xi, eta, zeta = 1, 2, 2.1, -1.9, -.8, -.3
     assert not Bc._niggli_check(A,B,C,xi,eta,zeta,eps)
+    

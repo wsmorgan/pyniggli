@@ -64,8 +64,6 @@ class reduced_cell(object):
         self.original = np.array(A)
         if eps is None:
             self.eps = (1E-5)*self.volume**(1./3.)
-        else:
-            self.eps = eps*self.volume**(1./3.)
         self._niggli_reduction(path)
         self.niggli = np.dot(self.original,self.C)
 
